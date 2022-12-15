@@ -91,5 +91,4 @@ public class PlayerControllerX : MonoBehaviour
             speed = nominalSpeed;
         }
     }
-
 }

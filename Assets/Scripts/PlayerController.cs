@@ -6,11 +6,17 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 5.0f;
     public bool hasPowerup = false;
+    public bool hasKnockback = false;
+    public bool hasMissiles = false;
+
     public GameObject powerupIndicator;
 
     private float powerupStrength = 15.0f;
+    private float powerupDuration = 7.0f;
+
     private Rigidbody playerRb;
     private GameObject focalPoint;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,37 +27,64 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        PlayerMovement();
+        FireMissiles();
+    }
+
+    private void PlayerMovement()
+    {
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
-        powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+        powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);    
+    }
+
+    private void FireMissiles()
+    {
+        if (hasMissiles)
+        {
+            
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Powerup"))
+        PowerupsRoutine(other);
+
+        if (other.CompareTag("Knockback"))
         {
-            Destroy(other.gameObject);
-            hasPowerup = true;
-            powerupIndicator.gameObject.SetActive(true);
-            StartCoroutine(PowerupCountdownRoutine());
+            hasKnockback = true;
         }
+        else if (other.CompareTag("Missiles"))
+        {
+            hasMissiles = true;
+        }
+    }
+
+    private void PowerupsRoutine(Collider other)
+    {
+        Destroy(other.gameObject);
+        hasPowerup = true;
+        powerupIndicator.gameObject.SetActive(true);
+        StartCoroutine(PowerupCountdownRoutine());
     }
 
     IEnumerator PowerupCountdownRoutine()
     {
-        yield return new WaitForSeconds(7);
+        yield return new WaitForSeconds(powerupDuration);
         hasPowerup = false;
+        hasKnockback = false;
+        hasMissiles = false;
         powerupIndicator.gameObject.SetActive(false);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") && hasPowerup)
+        if (collision.gameObject.CompareTag("Enemy") && hasKnockback)
         {
             Rigidbody enemyRigidbody = collision.gameObject.GetComponent<Rigidbody>();
             Vector3 awayFromPlayer = collision.gameObject.transform.position - transform.position;
 
-            enemyRigidbody.AddForce(awayFromPlayer * powerupStrength, ForceMode.Impulse);
+            enemyRigidbody.AddForce(awayFromPlayer * powerupStrength * enemyRigidbody.mass, ForceMode.Impulse);
             Debug.Log("Collided with " + collision.gameObject.name + " while powerup set to " + hasPowerup);
         }
     }

@@ -410,6 +410,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 23541399822167384, guid: 923deea38dc6a8843b15db7638919c1e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 48c96fa92b6b2684a90f441357a672dd, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 923deea38dc6a8843b15db7638919c1e, type: 3}
 --- !u!1 &1171813113
@@ -666,8 +670,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyCount: 0
   waveNumber: 1
-  enemyPrefab: {fileID: 9205313293074807921, guid: 87196e5cf724cfa46888047f1b8e6c68, type: 3}
-  powerupPrefab: {fileID: 6990489479947950563, guid: c5fee7b3b3528d842b915d254af670f5, type: 3}
+  enemyPrefab:
+  - {fileID: 9205313293074807921, guid: 87196e5cf724cfa46888047f1b8e6c68, type: 3}
+  - {fileID: 3167250069547479432, guid: 2415d4adadb132a49aa4ded2f739ad5b, type: 3}
+  powerupPrefab:
+  - {fileID: 6990489479947950563, guid: c5fee7b3b3528d842b915d254af670f5, type: 3}
+  - {fileID: 5055225785773619478, guid: 18a51fee00eff0f48b3c27ec3d142cd4, type: 3}
+  activeEnemiesTable:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &1324331991
 Transform:
   m_ObjectHideFlags: 0
