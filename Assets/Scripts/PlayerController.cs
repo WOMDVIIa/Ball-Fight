@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5.0f;
+    public float speed = 500.0f;
     public bool hasPowerup = false;
     public bool hasKnockback = false;
     public bool hasMissiles = false;
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private void PlayerMovement()
     {
         float forwardInput = Input.GetAxis("Vertical");
-        playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
+        playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed * Time.deltaTime);
         powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);    
     }
 
