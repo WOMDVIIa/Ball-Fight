@@ -8,42 +8,36 @@ public class PlayerController : MonoBehaviour
     public bool hasPowerup = false;
     public bool hasKnockback = false;
     public bool hasMissiles = false;
+    public bool missilesSpawnReady = false;
 
-    public GameObject powerupIndicator;
+    public GameObject projectilePrefab;
 
     private float powerupStrength = 15.0f;
-    private float powerupDuration = 7.0f;
+    private float powerupDuration = 17.0f;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
+    private SpawnManager spawnManager;
 
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
+        spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
         PlayerMovement();
-        FireMissiles();
     }
 
     private void PlayerMovement()
     {
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed * Time.deltaTime);
-        powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);    
-    }
-
-    private void FireMissiles()
-    {
-        if (hasMissiles)
-        {
-            
-        }
+        spawnManager.indicatorClone.transform.position = transform.position + new Vector3(0, -0.5f, 0);    
     }
 
     private void OnTriggerEnter(Collider other)
@@ -57,6 +51,7 @@ public class PlayerController : MonoBehaviour
         else if (other.CompareTag("Missiles"))
         {
             hasMissiles = true;
+            missilesSpawnReady = true;
         }
     }
 
@@ -64,7 +59,7 @@ public class PlayerController : MonoBehaviour
     {
         Destroy(other.gameObject);
         hasPowerup = true;
-        powerupIndicator.gameObject.SetActive(true);
+        spawnManager.indicatorClone.gameObject.SetActive(true);
         StartCoroutine(PowerupCountdownRoutine());
     }
 
@@ -74,7 +69,7 @@ public class PlayerController : MonoBehaviour
         hasPowerup = false;
         hasKnockback = false;
         hasMissiles = false;
-        powerupIndicator.gameObject.SetActive(false);
+        spawnManager.indicatorClone.gameObject.SetActive(false);
     }
 
     private void OnCollisionEnter(Collision collision)
