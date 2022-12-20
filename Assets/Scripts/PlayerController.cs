@@ -9,13 +9,17 @@ public class PlayerController : MonoBehaviour
     public bool hasKnockback = false;
     public bool hasMissiles = false;
     public bool missilesSpawnReady = false;
+    public float powerupDuration = 7.0f;
+    public int smashesLeft = 1;
 
     public GameObject projectilePrefab;
 
     private float powerupStrength = 15.0f;
-    private float powerupDuration = 17.0f;
+    private float preSmashForce = 10.0f;
+    private float postSmashForce = 30.0f;
 
     private Rigidbody playerRb;
+    private SphereCollider playerCollider;
     private GameObject focalPoint;
     private SpawnManager spawnManager;
 
@@ -23,6 +27,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
+        playerCollider = GetComponent<SphereCollider>();
         focalPoint = GameObject.Find("Focal Point");
         spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
     }
@@ -31,6 +36,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         PlayerMovement();
+        SmashAttack();
     }
 
     private void PlayerMovement()
@@ -40,18 +46,57 @@ public class PlayerController : MonoBehaviour
         spawnManager.indicatorClone.transform.position = transform.position + new Vector3(0, -0.5f, 0);    
     }
 
+    private void SmashAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && smashesLeft > 0)
+        {
+            StartCoroutine(SmashRoutine());
+            smashesLeft -= 1;
+        }
+    }
+
+    IEnumerator SmashRoutine()
+    {
+        SmashAwayEnemies(preSmashForce);
+        playerRb.AddForce(Vector3.up * 50, ForceMode.Impulse);
+        playerCollider.radius = 0.01f;
+        yield return new WaitForSeconds(0.2f);
+        playerRb.AddForce(Vector3.down * 100, ForceMode.Impulse);
+        yield return new WaitForSeconds(0.2f);
+        SmashAwayEnemies(postSmashForce);
+        yield return new WaitForSeconds(0.1f);
+        playerCollider.radius = 0.5f;
+    }
+
+    private void SmashAwayEnemies(float smashForce)
+    {
+        for (int i = 0; i < spawnManager.waveNumber; i++)
+        {
+            if (spawnManager.activeEnemiesTable[i] != null)
+            {
+                Vector3 awayFromPlayer = spawnManager.activeEnemiesTable[i].gameObject.transform.position - transform.position;
+                Rigidbody enemyRigidbody = spawnManager.activeEnemiesTable[i].gameObject.GetComponent<Rigidbody>();                               
+
+                enemyRigidbody.AddForce(awayFromPlayer.normalized * (1 / awayFromPlayer.magnitude) * smashForce * enemyRigidbody.mass, ForceMode.Impulse);    
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        PowerupsRoutine(other);
+        if (!hasPowerup)
+        {
+            PowerupsRoutine(other);
 
-        if (other.CompareTag("Knockback"))
-        {
-            hasKnockback = true;
-        }
-        else if (other.CompareTag("Missiles"))
-        {
-            hasMissiles = true;
-            missilesSpawnReady = true;
+            if (other.CompareTag("Knockback"))
+            {
+                hasKnockback = true;
+            }
+            else if (other.CompareTag("Missiles"))
+            {
+                hasMissiles = true;
+                missilesSpawnReady = true;
+            }
         }
     }
 

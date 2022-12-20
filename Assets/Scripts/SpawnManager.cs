@@ -68,7 +68,6 @@ public class SpawnManager : MonoBehaviour
         indicatorClone = Instantiate(indicatorPrefab, indicatorPrefab.transform.position, indicatorPrefab.transform.rotation);
     }
 
-
     void SpawnEnemyWave(int enemiesToSpawn)
     {
         for (int i = 0; i < enemiesToSpawn; i++)
@@ -77,7 +76,12 @@ public class SpawnManager : MonoBehaviour
             activeEnemiesTable[i] = Instantiate(enemyPrefab[enemyIndex], GenerateSpawnPosition(), enemyPrefab[0].transform.rotation);
         }
 
-        waveNumber++;
+        if (waveNumber < 10)
+        {
+            waveNumber++;
+            playerController.powerupDuration += 0.5f;
+            playerController.smashesLeft++;
+        }
         int powerupIndex = Random.Range(0, powerupPrefab.Length);
         Instantiate(powerupPrefab[powerupIndex], GenerateSpawnPosition(), powerupPrefab[0].transform.rotation);
     }

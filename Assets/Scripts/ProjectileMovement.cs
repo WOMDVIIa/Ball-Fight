@@ -7,7 +7,7 @@ public class ProjectileMovement : MonoBehaviour
     public GameObject target;
 
     private float speed = 15.0f;
-    private float collisionForce = 13.0f;
+    private float collisionForce = 6.5f;
     private Vector3 trajectory;
 
     // Start is called before the first frame update
