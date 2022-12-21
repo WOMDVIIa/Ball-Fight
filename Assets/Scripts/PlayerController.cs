@@ -123,9 +123,17 @@ public class PlayerController : MonoBehaviour
         {
             Rigidbody enemyRigidbody = collision.gameObject.GetComponent<Rigidbody>();
             Vector3 awayFromPlayer = collision.gameObject.transform.position - transform.position;
-
             enemyRigidbody.AddForce(awayFromPlayer * powerupStrength * enemyRigidbody.mass, ForceMode.Impulse);
-            Debug.Log("Collided with " + collision.gameObject.name + " while powerup set to " + hasPowerup);
+
+            Enemy enemyScript = collision.gameObject.GetComponent<Enemy>();
+            if (enemyScript.isBoss)
+            {
+                enemyScript.hitPoints -= 2;
+                if (enemyScript.hitPoints <= 0)
+                {
+                    Destroy(collision.gameObject);
+                }
+            }
         }
     }
 }

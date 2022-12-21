@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public bool isBoss;
+    public int hitPoints;
     public float speed = 300.0f;
     
     private Rigidbody enemyRb;

@@ -10,11 +10,12 @@ public class ProjectileMovement : MonoBehaviour
     private float collisionForce = 6.5f;
     private Vector3 trajectory;
 
+    private Enemy enemyScript;
+
     // Start is called before the first frame update
     void Start()
     {
-        //trajectory = (target.gameObject.transform.position - transform.position).normalized;
-        //transform.rotation = Quaternion.LookRotation(trajectory);
+        enemyScript = target.GetComponent<Enemy>();
     }
 
     // Update is called once per frame
@@ -36,9 +37,21 @@ public class ProjectileMovement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Rigidbody targetRb = collision.gameObject.GetComponent<Rigidbody>();
-            targetRb.AddForce(trajectory * collisionForce * targetRb.mass, ForceMode.Impulse);
             Destroy(gameObject);
+
+            Rigidbody targetRb = collision.gameObject.GetComponent<Rigidbody>();
+            if (!enemyScript.isBoss)
+            {
+                targetRb.AddForce(trajectory * collisionForce * targetRb.mass, ForceMode.Impulse);
+            }
+            else
+            {
+                enemyScript.hitPoints--;
+                if (enemyScript.hitPoints <= 0)
+                {
+                    Destroy(collision.gameObject);
+                }
+            }
         }        
     }
 }

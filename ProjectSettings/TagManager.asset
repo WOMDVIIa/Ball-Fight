@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Knockback
   - Missiles
+  - Wall
   layers:
   - Default
   - TransparentFX

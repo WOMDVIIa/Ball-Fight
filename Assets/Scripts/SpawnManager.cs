@@ -13,6 +13,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject indicatorClone;
     public GameObject projectilePrefab;
     public GameObject activeProjectileClone;
+    public GameObject bossPrefab;
     public GameObject[] enemyPrefab;
     public GameObject[] powerupPrefab;
     public GameObject[] activeEnemiesTable;
@@ -21,13 +22,14 @@ public class SpawnManager : MonoBehaviour
     //private int maxNumberOfEnemies = 10;
     private float spawnRange = 9.0f;
     private float missilesDelay = 1.25f;
+    private bool bossLastWave = false;
     
     // Start is called before the first frame update
     void Start()
     {
-        //player = GameObject.Find("Player(Clone)");
         SpawnPlayer();
         SpawnEnemyWave(waveNumber);
+        //SpawnBoss();
     }
 
     // Update is called once per frame
@@ -35,8 +37,16 @@ public class SpawnManager : MonoBehaviour
     {
         enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         if (enemyCount == 0)
-        {            
-            SpawnEnemyWave(waveNumber);
+        {
+            if ((waveNumber % 3 == 0) && !bossLastWave)
+            {
+                SpawnBoss();
+            }
+            else
+            {
+                SpawnEnemyWave(waveNumber);
+                bossLastWave = false;
+            }
         }
 
         if (playerController.hasMissiles && playerController.missilesSpawnReady)
@@ -79,11 +89,35 @@ public class SpawnManager : MonoBehaviour
         if (waveNumber < 10)
         {
             waveNumber++;
-            playerController.powerupDuration += 0.5f;
-            playerController.smashesLeft++;
+            playerController.powerupDuration = 7.0f + 0.5f * waveNumber;
         }
+
+        playerController.smashesLeft++;
+        SpawnPowerup();
+    }
+
+    void SpawnPowerup()
+    {
         int powerupIndex = Random.Range(0, powerupPrefab.Length);
         Instantiate(powerupPrefab[powerupIndex], GenerateSpawnPosition(), powerupPrefab[0].transform.rotation);
+    }
+
+    void SpawnBoss()
+    {
+        bossLastWave = true;
+        activeEnemiesTable[0] = Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation);
+        playerController.smashesLeft++;
+        StartCoroutine(BossFight());
+    }
+
+    IEnumerator BossFight()
+    {
+        while (bossLastWave)
+        {
+            playerController.powerupDuration = 2.0f;
+            SpawnPowerup();
+            yield return new WaitForSeconds(10);
+        }
     }
 
     private Vector3 GenerateSpawnPosition()
