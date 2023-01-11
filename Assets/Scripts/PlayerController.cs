@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     public bool hasPowerup = false;
     public bool hasKnockback = false;
     public bool hasMissiles = false;
-    public bool missilesSpawnReady = false;
+    public bool missilesSpawnReady = true;
     public float powerupDuration = 7.0f;
     public int smashesLeft = 1;
 

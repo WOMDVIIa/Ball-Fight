@@ -36,8 +36,8 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         SpawnPlayer();
-        SpawnEnemyWave(waveNumber);
-        //SpawnBoss();
+        //SpawnEnemyWave(waveNumber);
+        SpawnBoss();
     }
 
     // Update is called once per frame
@@ -66,7 +66,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator NewMissiles()
     {
-        for (int i = 0; i < waveNumber; i++)
+        for (int i = 0; i < activeEnemiesTable.Length; i++)
         {
             if (activeEnemiesTable[i] != null)
             {
