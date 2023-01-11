@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class SpawnManager : MonoBehaviour
 {
     public int enemyCount;
-    public int waveNumber = 1;
+    public int waveNumber;
 
     public GameObject playerPrefab;
     public GameObject playerClone;
@@ -20,6 +22,7 @@ public class SpawnManager : MonoBehaviour
     public PlayerController playerController;
 
     [SerializeField] GameObject[] walls;
+    [SerializeField] TextMeshProUGUI waveNumberText;
 
     //private int maxNumberOfEnemies = 10;
     int numberOfWalls = 6;
@@ -85,6 +88,9 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnEnemyWave(int enemiesToSpawn)
     {
+        waveNumber++;
+        Debug.Log(waveNumber);
+        waveNumberText.text = waveNumber.ToString();
         SetWallsActive(false);
 
         for (int i = 0; i < enemiesToSpawn; i++)
@@ -95,7 +101,6 @@ public class SpawnManager : MonoBehaviour
 
         if (waveNumber < 10)
         {
-            waveNumber++;
             playerController.powerupDuration = 7.0f + 0.5f * waveNumber;
         }
 
