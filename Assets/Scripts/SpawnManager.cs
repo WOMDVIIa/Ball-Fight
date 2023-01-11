@@ -24,6 +24,7 @@ public class SpawnManager : MonoBehaviour
     //private int maxNumberOfEnemies = 10;
     int numberOfWalls = 6;
     int numberOfActiveWalls;
+    int bossEveryXWaves = 4;
     private float spawnRange = 9.0f;
     private float missilesDelay = 1.25f;
     private bool bossLastWave = false;
@@ -32,8 +33,8 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         SpawnPlayer();
-        //SpawnEnemyWave(waveNumber);
-        SpawnBoss();
+        SpawnEnemyWave(waveNumber);
+        //SpawnBoss();
     }
 
     // Update is called once per frame
@@ -42,7 +43,7 @@ public class SpawnManager : MonoBehaviour
         enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         if (enemyCount == 0)
         {
-            if ((waveNumber % 2 == 0) && !bossLastWave)
+            if ((waveNumber % bossEveryXWaves == 0) && !bossLastWave)
             {
                 SpawnBoss();
             }
@@ -84,6 +85,8 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnEnemyWave(int enemiesToSpawn)
     {
+        SetWallsActive(false);
+
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             int enemyIndex = Random.Range(0, enemyPrefab.Length);
@@ -109,7 +112,7 @@ public class SpawnManager : MonoBehaviour
     void SpawnBoss()
     {
         bossLastWave = true;
-        ActivateWalls();
+        SetWallsActive(true);
         activeEnemiesTable[0] = Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation);
         playerController.smashesLeft++;
         StartCoroutine(BossFight());
@@ -125,11 +128,11 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    void ActivateWalls()
+    void SetWallsActive(bool status)
     {
         for (int i = 0; i < numberOfWalls; i++)
         {
-            walls[i].SetActive(true);
+            walls[i].SetActive(status);
         }
         numberOfActiveWalls = numberOfWalls;
     }
