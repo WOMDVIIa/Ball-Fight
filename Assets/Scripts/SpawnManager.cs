@@ -19,7 +19,11 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] activeEnemiesTable;
     public PlayerController playerController;
 
+    [SerializeField] GameObject[] walls;
+
     //private int maxNumberOfEnemies = 10;
+    int numberOfWalls = 6;
+    int numberOfActiveWalls;
     private float spawnRange = 9.0f;
     private float missilesDelay = 1.25f;
     private bool bossLastWave = false;
@@ -28,8 +32,8 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         SpawnPlayer();
-        SpawnEnemyWave(waveNumber);
-        //SpawnBoss();
+        //SpawnEnemyWave(waveNumber);
+        SpawnBoss();
     }
 
     // Update is called once per frame
@@ -38,7 +42,7 @@ public class SpawnManager : MonoBehaviour
         enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         if (enemyCount == 0)
         {
-            if ((waveNumber % 3 == 0) && !bossLastWave)
+            if ((waveNumber % 2 == 0) && !bossLastWave)
             {
                 SpawnBoss();
             }
@@ -105,6 +109,7 @@ public class SpawnManager : MonoBehaviour
     void SpawnBoss()
     {
         bossLastWave = true;
+        ActivateWalls();
         activeEnemiesTable[0] = Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation);
         playerController.smashesLeft++;
         StartCoroutine(BossFight());
@@ -117,6 +122,32 @@ public class SpawnManager : MonoBehaviour
             playerController.powerupDuration = 2.0f;
             SpawnPowerup();
             yield return new WaitForSeconds(10);
+        }
+    }
+
+    void ActivateWalls()
+    {
+        for (int i = 0; i < numberOfWalls; i++)
+        {
+            walls[i].SetActive(true);
+        }
+        numberOfActiveWalls = numberOfWalls;
+    }
+
+    public void DestroyRandomWall()
+    {
+        if (numberOfActiveWalls > 0)
+        {
+            int wallToDestroy = Random.Range(0, 6);
+            if (walls[wallToDestroy].active)
+            {
+                Debug.Log(wallToDestroy);
+                walls[wallToDestroy].SetActive(false);
+            }
+            else
+            {
+                DestroyRandomWall();
+            }
         }
     }
 

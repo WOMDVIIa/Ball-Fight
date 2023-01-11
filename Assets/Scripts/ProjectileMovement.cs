@@ -11,11 +11,13 @@ public class ProjectileMovement : MonoBehaviour
     private Vector3 trajectory;
 
     private Enemy enemyScript;
+    SpawnManager spawnManager;
 
     // Start is called before the first frame update
     void Start()
     {
         enemyScript = target.GetComponent<Enemy>();
+        spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
     }
 
     // Update is called once per frame
@@ -49,7 +51,9 @@ public class ProjectileMovement : MonoBehaviour
                 enemyScript.hitPoints--;
                 if (enemyScript.hitPoints <= 0)
                 {
-                    Destroy(collision.gameObject);
+                    //Destroy(collision.gameObject);
+                    spawnManager.DestroyRandomWall();
+                    enemyScript.hitPoints = enemyScript.bossHP;
                 }
             }
         }        

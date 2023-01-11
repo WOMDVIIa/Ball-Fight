@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public bool isBoss;
     public int hitPoints;
     public float speed = 300.0f;
+    public int bossHP = 3;
     
     private Rigidbody enemyRb;
     private GameObject playerClone;
@@ -15,6 +16,10 @@ public class Enemy : MonoBehaviour
     {
         enemyRb = GetComponent<Rigidbody>();
         playerClone = GameObject.Find("Player(Clone)");
+        if (isBoss)
+        {
+            hitPoints = bossHP;
+        }
     }
 
     // Update is called once per frame

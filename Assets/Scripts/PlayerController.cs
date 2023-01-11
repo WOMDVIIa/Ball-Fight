@@ -131,7 +131,9 @@ public class PlayerController : MonoBehaviour
                 enemyScript.hitPoints -= 2;
                 if (enemyScript.hitPoints <= 0)
                 {
-                    Destroy(collision.gameObject);
+                    //Destroy(collision.gameObject);
+                    spawnManager.DestroyRandomWall();
+                    enemyScript.hitPoints = enemyScript.bossHP;
                 }
             }
         }
