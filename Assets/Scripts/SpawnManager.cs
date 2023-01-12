@@ -7,7 +7,7 @@ using TMPro;
 public class SpawnManager : MonoBehaviour
 {
     public int enemyCount;
-    public int waveNumber = 1;
+    public int waveNumber;
 
     public GameObject playerPrefab;
     public GameObject playerClone;
@@ -20,6 +20,8 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] powerupPrefab;
     public GameObject[] activeEnemiesTable;
     public PlayerController playerController;
+    public TextMeshProUGUI jumpsNumberText;
+    public TextMeshProUGUI powerupTimerText;
 
     [SerializeField] GameObject[] walls;
     [SerializeField] TextMeshProUGUI waveNumberText;
@@ -46,7 +48,7 @@ public class SpawnManager : MonoBehaviour
         enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         if (enemyCount == 0)
         {
-            waveNumber++;
+            IncreaseWaveNumberAndSmashesLeft();
 
             if ((waveNumber % bossEveryXWaves == 0) && !bossLastWave)
             {
@@ -88,6 +90,14 @@ public class SpawnManager : MonoBehaviour
         playerController.missilesSpawnReady = true;
     }
 
+    void IncreaseWaveNumberAndSmashesLeft()
+    {
+        waveNumber++;
+        playerController.smashesLeft++;
+        jumpsNumberText.text = playerController.smashesLeft.ToString();
+    }
+
+
     void SpawnPlayer()
     {
         playerClone = Instantiate(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation);
@@ -97,7 +107,6 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnEnemyWave(int enemiesToSpawn)
     {
-        Debug.Log(waveNumber);
         waveNumberText.text = waveNumber.ToString();
         SetWallsActive(false);
 
@@ -111,8 +120,6 @@ public class SpawnManager : MonoBehaviour
         {
             playerController.powerupDuration = 7.0f + 0.5f * waveNumber;
         }
-
-        playerController.smashesLeft++;
         SpawnPowerup();
     }
 
@@ -127,8 +134,8 @@ public class SpawnManager : MonoBehaviour
         bossLastWave = true;
         SetWallsActive(true);
         activeEnemiesTable[0] = Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation);
-        playerController.smashesLeft++;
         StartCoroutine(BossFight());
+        StartCoroutine(playerController.PowerupCountdownRoutine(0));
     }
 
     IEnumerator BossFight()

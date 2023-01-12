@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public bool hasMissiles = false;
     public bool missilesSpawnReady = true;
     public float powerupDuration = 7.0f;
+    public float powerupDurationLeft;
     public int smashesLeft = 1;
 
     public GameObject projectilePrefab;
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour
         playerCollider = GetComponent<SphereCollider>();
         focalPoint = GameObject.Find("Focal Point");
         spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        spawnManager.jumpsNumberText.text = smashesLeft.ToString();
     }
 
     // Update is called once per frame
@@ -52,6 +54,7 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(SmashRoutine());
             smashesLeft -= 1;
+            spawnManager.jumpsNumberText.text = smashesLeft.ToString();
         }
     }
 
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
     private void SmashAwayEnemies(float smashForce)
     {
-        for (int i = 0; i < spawnManager.waveNumber; i++)
+        for (int i = 0; i < spawnManager.activeEnemiesTable.Length; i++)
         {
             if (spawnManager.activeEnemiesTable[i] != null)
             {
@@ -105,12 +108,19 @@ public class PlayerController : MonoBehaviour
         Destroy(other.gameObject);
         hasPowerup = true;
         spawnManager.indicatorClone.gameObject.SetActive(true);
-        StartCoroutine(PowerupCountdownRoutine());
+        StartCoroutine(PowerupCountdownRoutine(powerupDuration));
     }
 
-    IEnumerator PowerupCountdownRoutine()
+    public IEnumerator PowerupCountdownRoutine(float duration)
     {
-        yield return new WaitForSeconds(powerupDuration);
+        //yield return new WaitForSeconds(duration);
+        powerupDurationLeft = duration;
+        while (powerupDurationLeft > 0)
+        {
+            powerupDurationLeft -= Time.deltaTime;
+            yield return new WaitForSeconds(Time.deltaTime);
+            spawnManager.powerupTimerText.text = powerupDurationLeft.ToString("0.0", new System.Globalization.CultureInfo("en-GB"));
+        }
         hasPowerup = false;
         hasKnockback = false;
         hasMissiles = false;
