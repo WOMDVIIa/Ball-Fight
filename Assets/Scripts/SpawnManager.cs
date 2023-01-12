@@ -7,7 +7,7 @@ using TMPro;
 public class SpawnManager : MonoBehaviour
 {
     public int enemyCount;
-    public int waveNumber;
+    public int waveNumber = 1;
 
     public GameObject playerPrefab;
     public GameObject playerClone;
@@ -36,8 +36,8 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         SpawnPlayer();
-        //SpawnEnemyWave(waveNumber);
-        SpawnBoss();
+        SpawnEnemyWave(waveNumber);
+        //SpawnBoss();
     }
 
     // Update is called once per frame
@@ -46,13 +46,22 @@ public class SpawnManager : MonoBehaviour
         enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         if (enemyCount == 0)
         {
+            waveNumber++;
+
             if ((waveNumber % bossEveryXWaves == 0) && !bossLastWave)
             {
                 SpawnBoss();
             }
             else
             {
-                SpawnEnemyWave(waveNumber);
+                if (waveNumber > activeEnemiesTable.Length)
+                {
+                    SpawnEnemyWave(activeEnemiesTable.Length);
+                }
+                else
+                {
+                    SpawnEnemyWave(waveNumber);
+                }
                 bossLastWave = false;
             }
         }
@@ -88,7 +97,6 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnEnemyWave(int enemiesToSpawn)
     {
-        waveNumber++;
         Debug.Log(waveNumber);
         waveNumberText.text = waveNumber.ToString();
         SetWallsActive(false);
@@ -149,7 +157,6 @@ public class SpawnManager : MonoBehaviour
             int wallToDestroy = Random.Range(0, 6);
             if (walls[wallToDestroy].active)
             {
-                Debug.Log(wallToDestroy);
                 walls[wallToDestroy].SetActive(false);
             }
             else

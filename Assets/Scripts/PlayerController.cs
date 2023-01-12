@@ -128,7 +128,7 @@ public class PlayerController : MonoBehaviour
             Enemy enemyScript = collision.gameObject.GetComponent<Enemy>();
             if (enemyScript.isBoss)
             {
-                enemyScript.hitPoints -= 2;
+                enemyScript.hitPoints -= 3;
                 if (enemyScript.hitPoints <= 0)
                 {
                     //Destroy(collision.gameObject);
