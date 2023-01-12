@@ -120,6 +120,11 @@ public class SpawnManager : MonoBehaviour
         {
             playerController.powerupDuration = 7.0f + 0.5f * waveNumber;
         }
+        else
+        {
+            playerController.powerupDuration = 7.0f + 0.5f * activeEnemiesTable.Length;
+        }
+
         SpawnPowerup();
     }
 
@@ -131,6 +136,7 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnBoss()
     {
+        waveNumberText.text = "BOSS";
         bossLastWave = true;
         SetWallsActive(true);
         activeEnemiesTable[0] = Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation);
@@ -140,9 +146,10 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator BossFight()
     {
+        playerController.powerupDuration = 2.0f;
+
         while (bossLastWave)
         {
-            playerController.powerupDuration = 2.0f;
             SpawnPowerup();
             yield return new WaitForSeconds(10);
         }
