@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class SpawnManager : MonoBehaviour
 {
     public int enemyCount;
     public int waveNumber;
+    public bool gameOver;
 
     public GameObject playerPrefab;
     public GameObject playerClone;
@@ -25,18 +27,20 @@ public class SpawnManager : MonoBehaviour
 
     [SerializeField] GameObject[] walls;
     [SerializeField] TextMeshProUGUI waveNumberText;
+    [SerializeField] Button restartButton;
 
     //private int maxNumberOfEnemies = 10;
     int numberOfWalls = 6;
     int numberOfActiveWalls;
     int bossEveryXWaves = 4;
-    private float spawnRange = 9.0f;
-    private float missilesDelay = 1.25f;
-    private bool bossLastWave = false;
+    float spawnRange = 9.0f;
+    float missilesDelay = 1.25f;
+    bool bossLastWave = false;
     
     // Start is called before the first frame update
     void Start()
     {
+        gameOver = false;
         SpawnPlayer();
         SpawnEnemyWave(waveNumber);
         //SpawnBoss();
@@ -45,33 +49,40 @@ public class SpawnManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
-        if (enemyCount == 0)
+        if (!gameOver)
         {
-            IncreaseWaveNumberAndSmashesLeft();
+            enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
+            if (enemyCount == 0)
+            {
+                IncreaseWaveNumberAndSmashesLeft();
 
-            if ((waveNumber % bossEveryXWaves == 0) && !bossLastWave)
-            {
-                SpawnBoss();
-            }
-            else
-            {
-                if (waveNumber > activeEnemiesTable.Length)
+                if ((waveNumber % bossEveryXWaves == 0) && !bossLastWave)
                 {
-                    SpawnEnemyWave(activeEnemiesTable.Length);
+                    SpawnBoss();
                 }
                 else
                 {
-                    SpawnEnemyWave(waveNumber);
+                    if (waveNumber > activeEnemiesTable.Length)
+                    {
+                        SpawnEnemyWave(activeEnemiesTable.Length);
+                    }
+                    else
+                    {
+                        SpawnEnemyWave(waveNumber);
+                    }
+                    bossLastWave = false;
                 }
-                bossLastWave = false;
+            }
+
+            if (playerController.hasMissiles && playerController.missilesSpawnReady)
+            {
+                playerController.missilesSpawnReady = false;
+                StartCoroutine(NewMissiles());
             }
         }
-
-        if (playerController.hasMissiles && playerController.missilesSpawnReady)
+        else
         {
-            playerController.missilesSpawnReady = false;
-            StartCoroutine(NewMissiles());
+            restartButton.gameObject.SetActive(true);
         }
     }
 
@@ -185,5 +196,10 @@ public class SpawnManager : MonoBehaviour
         float spawnPosX = Random.Range(-spawnRange, spawnRange);
         float spawnPosZ = Random.Range(-spawnRange, spawnRange);
         return new Vector3(spawnPosX, 0, spawnPosZ);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
     }
 }

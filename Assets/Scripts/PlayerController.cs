@@ -45,7 +45,12 @@ public class PlayerController : MonoBehaviour
     {
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed * Time.deltaTime);
-        spawnManager.indicatorClone.transform.position = transform.position + new Vector3(0, -0.5f, 0);    
+        spawnManager.indicatorClone.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+
+        if (transform.position.y < -10)
+        {
+            spawnManager.gameOver = true;
+        }
     }
 
     private void SmashAttack()
